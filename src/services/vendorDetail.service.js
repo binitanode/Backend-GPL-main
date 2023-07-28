@@ -7,7 +7,7 @@ async function getVendorDetail(req) {
         .limit(pageSize)
         .sort({ createdAt: -1 })
         .skip(pageSize * (page - 1))
-        .populate('vendordata')
+        .populate('vendor_id')
     return findedAllData
 }
 

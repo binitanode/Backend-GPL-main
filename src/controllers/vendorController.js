@@ -1,4 +1,5 @@
 const VendorModel = require("../models/vendorModel");
+const LogModel = require("../models/logModel");
 const { getAllData, count } = require("../services/vendor.service");
 const { URL } = require('url');
 
@@ -18,6 +19,11 @@ async function findAllData(req, res, next) {
 }
 
 async function createData(req, res) {
+  if(!req.body){
+    return res.status(404).json({
+      message: "parameter is missing",
+    });
+  }
   const reqData = req.body
   const createdBy = req.user._id;
   const webData = reqData.websiteURL;
@@ -55,12 +61,18 @@ async function createData(req, res) {
 async function updateData(req, res) {
   const id = req.params.id;
   const updatedData = req.body;
+  if(!id && !updatedData){
+    return res.status(404).json({
+      message: "parameter is missing",
+    });
+  }
+  // await LogModel.create({ user_id: user_id, action_id: id, module:"VendorModel in updateData", action: "update" });
   await VendorModel.findByIdAndUpdate(id, updatedData)
     .then((updateData) => {
       if (!updateData)
         return res.status(404).json({
           message: "Data is not found!",
-        });
+        });                                                                                                             
       res.status(201).json({
         message: "Updated data successfully ",
         updateData,
@@ -76,6 +88,12 @@ async function updateData(req, res) {
 
 async function deleteById(req, res) {
   const id = req.params.id;
+  if(!id){
+    return res.status(404).json({
+      message: "parameter is missing",
+    });
+  }
+  // await LogModel.create({ user_id: user_id, action_id: id, module:"VendorModel in deleteData", action: "delete" });
   await VendorModel.findByIdAndDelete(id)
     .then((deleteData) => {
       if (!deleteData)
@@ -96,6 +114,11 @@ async function deleteById(req, res) {
 
 async function getById(req, res) {
   const id = req.params.id;
+  if(!id){
+    return res.status(404).json({
+      message: "parameter is missing",
+    });
+  }
   await VendorModel.findById(id)
     .then((createdTask) => {
       if (!createdTask)
@@ -148,6 +171,7 @@ async function csvUploader(req, res) {
     }
     lineNum++;
   };
+  // await LogModel.create({ user_id: user_id, module:"csv upload", action: "vendor create" });
 
   await VendorModel.insertMany(successData).then(function () {
     res.status(200).json({

@@ -6,6 +6,9 @@ const cors = require("cors");
 require('dotenv').config();
 const uri = process.env.MONGODB_URI;
 console.log("uri",uri);
+// const { scrapping_createDetail } = require('./src/controllers/vendorDetailController/scrapping_createDetail'); 
+// const redisClient = require("./redis.js");
+// console.log("redisClient",redisClient);
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(

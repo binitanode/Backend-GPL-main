@@ -3,6 +3,7 @@ const UserModel = require("../models/userModel");
 const createToken = require("../middleware/createToken");
 const Joi = require("joi");
 const RoleModel = require("../models/roleModel");
+const LogModel = require("../models/logModel");
 const { findAllUsers } = require("../services/user.service");
 
 const schema = Joi.object({
@@ -114,9 +115,10 @@ async function createUser(req, res) {
       if (!setUserType) {
         return res.status(400).json({ message: "Role Type is missing!" });
       }
+      // await LogModel.create({ user_id: user_id, module:"user", action: "create user" });
 
       const hasedPassword = await hash(value.password, 10);
-      const create = await await UserModel.create({
+      const create = await UserModel.create({
         ...value,
         type: setUserType.name,
         password: hasedPassword,
@@ -148,6 +150,7 @@ async function updateUser(req, res) {
     }
     const id = req.params.id;
     const updatedData = req.body;
+    // await LogModel.create({ user_id: user_id, action_id: id, module:"user", action: "update user" });
     await UserModel.findByIdAndUpdate(id, updatedData)
       .then((updateUser) => {
         if (!updateUser)
@@ -181,6 +184,7 @@ async function deleteUser(req, res) {
       });
     }
     const id = req.params.id;
+    // await LogModel.create({ user_id: user_id, action_id: id, module:"user", action: "delte user" });
     await UserModel.findByIdAndDelete(id)
       .then((updateUser) => {
         if (!updateUser)
@@ -223,6 +227,7 @@ async function loginUser(req, res) {
     }
     const passCompare = await compare(req.body.password, userData.password);
     if (passCompare) {
+      // await LogModel.create({ user_id: user_id, action_id: userData._id, module:"user", action: "user login" });
       const Token = createToken(userData);
       res.status(200).json({
         message: "Login Successfull!",
